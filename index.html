@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>xplor code challange</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css"
+          integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+
+<link rel="stylesheet" href="common/commonStyle.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+<!-- jqueryui -->
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<!--<link rel="stylesheet" href="/resources/demos/style.css">-->
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+<script src="common/commonJavascript.js"></script>
+
+</head>
+<body>
+
+<div class="container">
+
+
+    <div id="tabs">
+        <ul>
+            <li><a href="#place">1.place</a></li>
+            <li><a href="#move">2.start game</a></li>
+
+        </ul>
+        <!--#start place -->
+        <div id="place" class=" center"
+             style="min-height: 100px; margin-top: 5px; border:solid darkkhaki; padding:5px;">
+            <form class="form-inline">
+                <div class="form-group col-12 col-sm-4">
+                    <label for="x_co">X coordinate</label>
+                    <input type="text" class="form-control" id="x_co"/>
+                </div>
+                <div class="form-group col-12 col-sm-4">
+                    <label for="y_co">Y coordinate</label>
+                    <input type="text" class="form-control" id="y_co"/>
+                </div>
+                <div class="form-group col-12 col-sm-4">
+                    <label for="facing">Facing</label>
+                    <select id="facing" class="form-control">
+                        <option value="">Choose facing</option>
+                        <option value="N">North</option>
+                        <option value="E">East</option>
+                        <option value="W">West</option>
+                        <option Value="S">South</option>
+
+                    </select>
+                </div>
+                <div style="margin-top:15px;" class="form-group col-12 col-sm-12">
+                    <div class="col-4 col-sm-4"></div>
+                    <button id="obj_place" type="button" class="btn-default col-4 col-sm-4" data-toggle="tooltip"
+                            data-placement="top">Place it
+                    </button>
+
+
+                    <div class="col-4 col-sm-4"></div>
+
+                </div>
+            </form>
+
+
+        </div>
+        <!--#start move -->
+        <div id="move" class="center" style="min-height: 100px; margin-top: 5px; border:solid grey; padding:5px;">
+
+
+            <form class="form-inline">
+                <div class="form-group col-12 col-sm-4"></div>
+                <div class="form-group col-1 col-sm-1">
+                    <button id="obj_left" type="button" class="form-control" data-toggle="tooltip" data-placement="top"
+                            title="left"><i class="fa fa-arrow-left" style="font-size:20px;color:red"></i></button>
+                </div>
+                <div class="form-group col-1 col-sm-1">
+                    <button id="obj_move" type="button" class="form-control" data-toggle="tooltip" data-placement="top"
+                            title="move"><i class="fa fa-arrow-up" style="font-size:20px;color:red"></i></button>
+                </div>
+                <div class="form-group col-1 col-sm-1">
+                    <button id="obj_right" type="button" class="form-control" data-toggle="tooltip" data-placement="top"
+                            title="right"><i class="fa fa-arrow-right" style="font-size:20px;color:red"></i></button>
+                </div>
+                <div class="form-group col-12 col-sm-4"></div>
+                <div style="margin-top:15px;" class="form-group col-12 col-sm-12">
+                    <div class="col-4 col-sm-4"></div>
+                    <button id="obj_report" type="button" class="btn-primary col-3 col-sm-3" data-toggle="tooltip"
+                            data-placement="top">Report
+                    </button>
+
+
+                    <div class="col-4 col-sm-4"></div>
+
+                </div>
+            </form>
+
+
+        </div>
+
+
+    </div>
+
+
+    <!--drawing is here -->
+    <div id="obj_result" style="margin:auto; height:500px; width:500px; border:solid grey; padding:5px;">
+
+
+    </div>
+</div>
+
+
+</body>
+
+
+</html>
+<script type="text/javascript">
+
+    $(function () {
+        resetObjects();
+        $("#tabs").tabs();
+        onclickFunctions();
+    });
+
+
+    function onclickFunctions() {
+        $('#obj_place').on('click', function () {
+            objPlace();
+        });
+        $('#obj_report').on('click', function () {
+            objReport();
+        });
+
+        $('#obj_move').on('click', function () {
+            objMove();
+        });
+        $('#obj_left').on('click', function () {
+            objLeft();
+        });
+        $('#obj_right').on('click', function () {
+            objRight();
+        });
+    }
+
+    function resetObjects() {
+        var request = $.ajax({
+            url: '/xplor/Mycontroller.php?func=resetObject',
+            method: "POST",
+            dataType: "json",
+            data: {objectName: 'toy'}
+
+
+        });
+        request.done(function (res) {
+            //successfull output
+            $('#obj_result').html(res.feedback);
+
+        });
+
+    }
+
+    function objLeft() {
+
+        var request = $.ajax({
+            url: '/xplor/Mycontroller.php?func=objLeft',
+            method: "POST",
+            dataType: "json",
+            data: {objectName: 'toy'}
+
+
+        });
+
+        request.done(function (res) {
+            //successfull output
+            $('#obj_result').html(res.feedback);
+
+        });
+        request.fail(function (jqXHR, textStatus) {
+            //failed for output because of status or ...
+        });
+
+    }
+
+    function objRight() {
+
+        var request = $.ajax({
+            url: '/xplor/Mycontroller.php?func=objRight',
+            method: "POST",
+            dataType: "json",
+            data: {objectName: 'toy'}
+
+
+        });
+
+        request.done(function (res) {
+            //successfull output
+            $('#obj_result').html(res.feedback);
+
+        });
+        request.fail(function (jqXHR, textStatus) {
+            //failed for output because of status or ...
+        });
+
+    }
+
+    function objMove() {
+
+        var request = $.ajax({
+            url: '/xplor/Mycontroller.php?func=objMove',
+            method: "POST",
+            dataType: "json",
+            data: {objectName: 'toy'}
+
+
+        });
+
+        request.done(function (res) {
+            //successfull output
+            $('#obj_result').html(res.feedback);
+
+        });
+        request.fail(function (jqXHR, textStatus) {
+            //failed for output because of status or ...
+        });
+
+    }
+
+    function objReport() {
+
+
+        var request = $.ajax({
+            url: '/xplor/Mycontroller.php?func=objReport',
+            method: "POST",
+            dataType: "json",
+            data: {objectName: 'toy'}
+
+
+        });
+
+        request.done(function (res) {
+            //successfull output
+            alert(res.report);
+        });
+        request.fail(function (jqXHR, textStatus) {
+            //failed for output because of status or ...
+        });
+
+    }
+
+    function objPlaceVallidation(vx, vy, vfacing) {
+        var result = true;
+        if (vx.toString() == 'NaN' || vx.toString().length != $('#x_co').val().length) {
+            $('#x_co').css('border', 'solid red');
+            result = false;
+        }
+        if (vy.toString() == 'NaN' || vy.toString().length != $('#y_co').val().length) {
+            $('#y_co').css('border', 'solid red');
+            result = false;
+        }
+        if (vfacing.length < 1) {
+            $('#facing').css('border', 'solid red');
+            result = false;
+        }
+
+        return result;
+
+    }
+
+    function objPlace() {
+        console.log('placeittt');
+        $('#x_co').css('border', '1px solid #ced4da');
+        $('#y_co').css('border', '1px solid #ced4da');
+        $('#facing').css('border', '1px solid #ced4da');
+        var vx = parseFloat($('#x_co').val()), vy = parseFloat($('#y_co').val()), vfacing = $('#facing').val();
+        if (!objPlaceVallidation(vx, vy, vfacing)) {
+            return;
+        }
+
+
+        var request = $.ajax({
+            url: '/xplor/Mycontroller.php?func=objPlace',
+            method: "POST",
+            dataType: "json",
+            data: {x_co: vx, y_co: vy, facing: vfacing}
+
+
+        });
+
+        request.done(function (res) {
+            $('#obj_result').html(res.feedback);
+        });
+        request.fail(function (jqXHR, textStatus) {
+            //failed for output because of status or ...
+        });
+
+
+    }
+
+</script>
